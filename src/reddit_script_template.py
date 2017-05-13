@@ -1,8 +1,8 @@
 #Call this using a crontab on your server with the following settings to run once per minute:
-#* * * * * cd ~/python/reddit_script_template/src; reddit_script_template.py
+#* * * * * cd ~/python/reddit_script_template/src; python reddit_script_template.py
 
 #If you don't own a server, consider using vagrant https://www.vagrantup.com/intro/getting-started/
-#* * * * * cd /vagrant/reddit_script_template/src; reddit_script_template.py
+#* * * * * cd /vagrant/reddit_script_template/src; python reddit_script_template.py
 
 import praw
 import re
