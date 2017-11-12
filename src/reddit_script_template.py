@@ -1,18 +1,17 @@
-#Call this using a crontab on your server with the following settings to run once per minute:
-#* * * * * cd ~/python/reddit_script_template/src; python reddit_script_template.py
+#Call this using a crontab on your server with the following settings to run once a day:
+#0 1 * * * kill myredditbot; cd ~/python/reddit_script_template/src; exec -a myredditbot python reddit_script_template.py
+#This command stops the bot, then restarts it forcing it to relog in.
 
 #If you don't own a server, consider using vagrant https://www.vagrantup.com/intro/getting-started/
-#* * * * * cd /vagrant/reddit_script_template/src; python reddit_script_template.py
+#0 1 * * * kill myredditbot; cd /vagrant/reddit_script_template/src; exec -a myredditbot python reddit_script_template.py
 
 import praw
 import re
 import datetime
 
-def login():
-    reddit = praw.Reddit('reddit_script_template')
-    return reddit
+r = praw.Reddit('reddit_script_template')
 
-def run(r):
+def run():
     subreddit = r.subreddit("YourSubreddit")
 
     #Checks the top 5 posts in the "hot" category in the subreddit
@@ -31,9 +30,15 @@ def run(r):
             comment_time = datetime.datetime.utcfromtimestamp(comment.created_utc)
             time_since = (time_now - comment_time).total_seconds()
             check_some_regex = re.search(regex_pattern, comment_text)
-            #If comment is less than a minute old and contains the pattern we want
-            #We use a minute because we set our cron job to run once a minute
-            if time_since <= 60 and check_some_regex:
+            #If comment is less than 15 seconds old and contains the pattern we want
+            #15 seconds is how long we sleep between checking for new comments to make
+            if time_since <= 15 and check_some_regex:
                 comment.reply("replying to text to reply to")
 
-run(login())
+def main():
+    while(1):
+        run()
+        time.sleep(15)
+
+if __name__ == '__main__':
+    main()
